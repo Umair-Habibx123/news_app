@@ -1,3 +1,5 @@
+// lib/screens/home/widgets/no_internet_screen.dart
+
 import 'package:flutter/material.dart';
 
 class NoInternetScreen extends StatelessWidget {
@@ -7,77 +9,81 @@ class NoInternetScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Connection Lost'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        foregroundColor: theme.colorScheme.onBackground,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.wifi_off_rounded,
-              size: 100,
-              color: isDarkMode ? Colors.blueGrey[400] : Colors.blueGrey[600],
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'No Internet Connection',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onBackground,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Please check your network connection and try again',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            FilledButton.tonal(
-              onPressed: onRetry,
-              style: FilledButton.styleFrom(
-                backgroundColor: isDarkMode 
-                    ? Colors.blueGrey[800] 
-                    : Colors.blueGrey[100],
-                foregroundColor: isDarkMode 
-                    ? Colors.blueGrey[100] 
-                    : Colors.blueGrey[800],
-                minimumSize: const Size(200, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+      backgroundColor:
+          isDark ? const Color(0xFF0D0D1A) : const Color(0xFFF4F5FF),
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: size.width * 0.3,
+                  height: size.width * 0.3,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xFF6C63FF).withOpacity(0.15),
+                        const Color(0xFF6C63FF).withOpacity(0.05),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.wifi_off_rounded,
+                    size: 56,
+                    color: Color(0xFF6C63FF),
+                  ),
                 ),
-              ),
-              child: const Text(
-                'Retry Connection',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: onRetry,
-              child: Text(
-                'Try again',
-                style: TextStyle(
-                  color: isDarkMode 
-                      ? Colors.blueGrey[300] 
-                      : Colors.blueGrey[700],
+                const SizedBox(height: 32),
+                Text(
+                  'No Internet Connection',
+                  style: TextStyle(
+                    fontSize: size.width * 0.055,
+                    fontWeight: FontWeight.w800,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-              ),
+                const SizedBox(height: 12),
+                Text(
+                  'Please check your network\nand try again.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[500],
+                    height: 1.6,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 40),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: onRetry,
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: const Text(
+                      'Retry Connection',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFF6C63FF),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

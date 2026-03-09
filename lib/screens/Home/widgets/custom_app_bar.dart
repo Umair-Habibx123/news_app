@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:news_app/services/NewsProviderApi.dart';
+import 'package:news_app/services/news_provider_api.dart';
 import 'package:news_app/screens/Category/category.dart';
 
 class NewsAppBar extends StatelessWidget implements PreferredSizeWidget {

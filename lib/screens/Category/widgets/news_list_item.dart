@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:news_app/screens/DetailPage/NewsDetailPage.dart';
+import 'package:news_app/screens/detail/news_detail_screen.dart';
 
 class NewsListItem extends StatelessWidget {
   final Map<String, dynamic> article;
@@ -23,7 +23,7 @@ class NewsListItem extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => NewsDetailPage(article: article),
+              builder: (context) => NewsDetailScreen(article: article),
             ),
           );
         },
