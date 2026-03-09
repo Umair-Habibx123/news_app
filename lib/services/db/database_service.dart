@@ -27,7 +27,7 @@ class DatabaseService {
       version: 1,
       onCreate: (db, version) async {
         await db.execute('''
-          CREATE TABLE bookmarks (
+          CREATE TABLE if NOT EXISTS bookmarks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             url TEXT UNIQUE NOT NULL,
             data TEXT NOT NULL,
@@ -36,7 +36,7 @@ class DatabaseService {
         ''');
 
         await db.execute('''
-          CREATE TABLE search_history (
+          CREATE TABLE if NOT EXISTS search_history (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             query TEXT UNIQUE NOT NULL,
             searched_at TEXT NOT NULL
@@ -44,7 +44,7 @@ class DatabaseService {
         ''');
 
         await db.execute('''
-          CREATE TABLE app_settings (
+          CREATE TABLE if NOT EXISTS app_settings (
             key TEXT PRIMARY KEY,
             value TEXT NOT NULL
           )
