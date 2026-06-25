@@ -10,6 +10,7 @@ import 'package:news_app/screens/home/widgets/horizontal_news_cards.dart';
 import 'package:news_app/screens/bookmarks/bookmarks_screen.dart';
 import 'package:news_app/screens/search/search_screen.dart';
 import 'package:news_app/screens/settings/settings_screen.dart';
+import 'package:news_app/l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -31,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -58,28 +60,28 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 _NavItem(
                   icon: Icons.home_rounded,
-                  label: 'Home',
+                  label: l.t('home'),
                   index: 0,
                   selectedIndex: _selectedIndex,
                   onTap: () => setState(() => _selectedIndex = 0),
                 ),
                 _NavItem(
                   icon: Icons.search_rounded,
-                  label: 'Search',
+                  label: l.t('search'),
                   index: 1,
                   selectedIndex: _selectedIndex,
                   onTap: () => setState(() => _selectedIndex = 1),
                 ),
                 _NavItem(
                   icon: Icons.bookmark_rounded,
-                  label: 'Saved',
+                  label: l.t('saved'),
                   index: 2,
                   selectedIndex: _selectedIndex,
                   onTap: () => setState(() => _selectedIndex = 2),
                 ),
                 _NavItem(
                   icon: Icons.settings_rounded,
-                  label: 'Settings',
+                  label: l.t('settings'),
                   index: 3,
                   selectedIndex: _selectedIndex,
                   onTap: () => setState(() => _selectedIndex = 3),
@@ -153,6 +155,7 @@ class _NewsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context);
     return SafeArea(
       child: NestedScrollView(
         headerSliverBuilder: (context, _) => [
@@ -162,16 +165,17 @@ class _NewsTab extends StatelessWidget {
             backgroundColor: theme.appBarTheme.backgroundColor,
             expandedHeight: 58,
             flexibleSpace: FlexibleSpaceBar(
-              title: const Text(
-                'News App',
-                style: TextStyle(
+              title: Text(
+                l.t('appName'),
+                style: const TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 20,
                   color: Colors.white,
                 ),
               ),
               centerTitle: false,
-              titlePadding: const EdgeInsets.only(left: 16, bottom: 12),
+              titlePadding:
+                  const EdgeInsetsDirectional.only(start: 16, bottom: 12),
             ),
             actions: [
               Consumer<ThemeProvider>(
@@ -220,18 +224,20 @@ class _NewsTab extends StatelessWidget {
                       ),
                       slivers: [
                         if (provider.trendingArticles.isNotEmpty) ...[
-                          const SliverToBoxAdapter(
+                          SliverToBoxAdapter(
                             child: Padding(
                               padding:
-                                  EdgeInsets.fromLTRB(16, 16, 16, 8),
+                                  const EdgeInsets.fromLTRB(16, 16, 16, 8),
                               child: Row(
                                 children: [
-                                  Icon(Icons.local_fire_department_rounded,
-                                      color: Color(0xFFFF6B35), size: 20),
-                                  SizedBox(width: 6),
+                                  const Icon(
+                                      Icons.local_fire_department_rounded,
+                                      color: Color(0xFFFF6B35),
+                                      size: 20),
+                                  const SizedBox(width: 6),
                                   Text(
-                                    'Trending',
-                                    style: TextStyle(
+                                    l.t('trending'),
+                                    style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w800),
                                   ),
@@ -242,17 +248,17 @@ class _NewsTab extends StatelessWidget {
                           const SliverToBoxAdapter(
                               child: HorizontalNewsCards()),
                         ],
-                        const SliverToBoxAdapter(
+                        SliverToBoxAdapter(
                           child: Padding(
-                            padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                             child: Row(
                               children: [
-                                Icon(Icons.article_rounded,
+                                const Icon(Icons.article_rounded,
                                     color: Color(0xFF6C63FF), size: 20),
-                                SizedBox(width: 6),
+                                const SizedBox(width: 6),
                                 Text(
-                                  'Latest News',
-                                  style: TextStyle(
+                                  l.t('latestNews'),
+                                  style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w800),
                                 ),
@@ -297,6 +303,7 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -315,7 +322,7 @@ class _ErrorView extends StatelessWidget {
             FilledButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Try Again'),
+              label: Text(l.t('tryAgain')),
               style: FilledButton.styleFrom(
                 backgroundColor: const Color(0xFF6C63FF),
                 shape: RoundedRectangleBorder(
@@ -335,6 +342,7 @@ class _LoadMoreWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Center(
@@ -344,7 +352,7 @@ class _LoadMoreWidget extends StatelessWidget {
                 ? FilledButton.icon(
                     onPressed: provider.loadMore,
                     icon: const Icon(Icons.expand_more_rounded),
-                    label: const Text('Load More'),
+                    label: Text(l.t('loadMore')),
                     style: FilledButton.styleFrom(
                       backgroundColor: const Color(0xFF6C63FF),
                       padding: const EdgeInsets.symmetric(
@@ -353,8 +361,8 @@ class _LoadMoreWidget extends StatelessWidget {
                           borderRadius: BorderRadius.circular(24)),
                     ),
                   )
-                : const Text("You're all caught up! ✓",
-                    style: TextStyle(color: Colors.grey)),
+                : Text("${l.t('allCaughtUp')} ✓",
+                    style: const TextStyle(color: Colors.grey)),
       ),
     );
   }

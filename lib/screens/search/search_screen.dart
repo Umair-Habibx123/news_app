@@ -5,6 +5,7 @@ import 'package:news_app/screens/home/widgets/vertical_news_list.dart';
 import 'package:provider/provider.dart';
 import 'package:news_app/services/news_provider_api.dart';
 import 'package:news_app/services/search_provider.dart';
+import 'package:news_app/l10n/app_localizations.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -19,9 +20,9 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _isSearching = false;
 
   static const _sortOptions = [
-    ('publishedAt', 'Latest'),
-    ('popularity', 'Popular'),
-    ('relevancy', 'Relevant'),
+    ('publishedAt', 'latestFirst'),
+    ('popularity', 'mostPopular'),
+    ('relevancy', 'mostRelevant'),
   ];
 
   @override
@@ -48,6 +49,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l = AppLocalizations.of(context);
 
     return SafeArea(
       child: Column(
@@ -79,7 +81,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         fontSize: 14,
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Search articles, topics...',
+                        hintText: l.t('searchHint'),
                         hintStyle: TextStyle(
                             color: Colors.grey[400], fontSize: 14),
                         prefixIcon: const Icon(Icons.search_rounded,
@@ -111,9 +113,9 @@ class _SearchScreenState extends State<SearchScreen> {
                       borderRadius: BorderRadius.circular(23),
                     ),
                     alignment: Alignment.center,
-                    child: const Text(
-                      'Search',
-                      style: TextStyle(
+                    child: Text(
+                      l.t('search'),
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
                         fontSize: 13,
@@ -137,7 +139,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: Row(
                   children: [
                     Text(
-                      'Sort: ',
+                      '${l.t('sortBy')}: ',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -146,11 +148,16 @@ class _SearchScreenState extends State<SearchScreen> {
                             : Colors.grey[600],
                       ),
                     ),
-                    ..._sortOptions.map((opt) {
+                    Expanded(
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        children: _sortOptions.map((opt) {
                       final isActive =
                           provider.currentSortBy.name == opt.$1;
                       return Padding(
                         padding: const EdgeInsets.only(right: 8),
+                        child: Center(
                         child: GestureDetector(
                           onTap: () {
                             final sort = SortBy.values.firstWhere(
@@ -179,7 +186,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               ),
                             ),
                             child: Text(
-                              opt.$2,
+                              l.t(opt.$2),
                               style: TextStyle(
                                 fontSize: 11,
                                 color: isActive
@@ -190,8 +197,11 @@ class _SearchScreenState extends State<SearchScreen> {
                             ),
                           ),
                         ),
+                        ),
                       );
-                    }),
+                    }).toList(),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -219,6 +229,7 @@ class _SearchResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Consumer<NewsProviderApi>(
       builder: (context, provider, _) {
         if (provider.isFetching && provider.articles.isEmpty) {
@@ -235,7 +246,8 @@ class _SearchResults extends StatelessWidget {
                 const Icon(Icons.search_off_rounded,
                     size: 64, color: Colors.grey),
                 const SizedBox(height: 16),
-                Text('No results for "$query"',
+                Text('${l.t('noArticles')}\n"$query"',
+                    textAlign: TextAlign.center,
                     style: const TextStyle(color: Colors.grey)),
               ],
             ),
@@ -259,10 +271,10 @@ class _SearchResults extends StatelessWidget {
                               style: FilledButton.styleFrom(
                                 backgroundColor: const Color(0xFF6C63FF),
                               ),
-                              child: const Text('Load More'),
+                              child: Text(l.t('loadMore')),
                             )
-                          : const Text('No more results',
-                              style: TextStyle(color: Colors.grey)),
+                          : Text(l.t('allCaughtUp'),
+                              style: const TextStyle(color: Colors.grey)),
                 ),
               );
             }
@@ -281,6 +293,7 @@ class _SearchHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Consumer<SearchProvider>(
       builder: (context, search, _) {
         if (search.history.isEmpty) {
@@ -291,10 +304,10 @@ class _SearchHistory extends StatelessWidget {
                 Icon(Icons.manage_search_rounded,
                     size: 64, color: Colors.grey[300]),
                 const SizedBox(height: 16),
-                const Text(
-                  'Search for news topics,\npeople, or events',
+                Text(
+                  l.t('searchPrompt'),
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey, fontSize: 15),
+                  style: const TextStyle(color: Colors.grey, fontSize: 15),
                 ),
               ],
             ),
@@ -307,14 +320,14 @@ class _SearchHistory extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Row(
                 children: [
-                  const Text('Recent Searches',
-                      style: TextStyle(
+                  Text(l.t('recentSearches'),
+                      style: const TextStyle(
                           fontWeight: FontWeight.w700, fontSize: 15)),
                   const Spacer(),
                   TextButton(
                     onPressed: search.clearHistory,
-                    child: const Text('Clear all',
-                        style: TextStyle(
+                    child: Text(l.t('clear'),
+                        style: const TextStyle(
                             color: Color(0xFF6C63FF), fontSize: 12)),
                   ),
                 ],

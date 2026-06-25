@@ -1,6 +1,7 @@
 // lib/screens/home/widgets/no_internet_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:news_app/l10n/app_localizations.dart';
 
 class NoInternetScreen extends StatelessWidget {
   final VoidCallback onRetry;
@@ -11,6 +12,7 @@ class NoInternetScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
+    final l = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor:
@@ -44,7 +46,7 @@ class NoInternetScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
                 Text(
-                  'No Internet Connection',
+                  l.t('noInternetTitle'),
                   style: TextStyle(
                     fontSize: size.width * 0.055,
                     fontWeight: FontWeight.w800,
@@ -54,7 +56,7 @@ class NoInternetScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Please check your network\nand try again.',
+                  l.t('noInternetMessage'),
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[500],
@@ -68,9 +70,9 @@ class NoInternetScreen extends StatelessWidget {
                   child: FilledButton.icon(
                     onPressed: onRetry,
                     icon: const Icon(Icons.refresh_rounded),
-                    label: const Text(
-                      'Retry Connection',
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                    label: Text(
+                      l.t('retry'),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     style: FilledButton.styleFrom(
                       backgroundColor: const Color(0xFF6C63FF),

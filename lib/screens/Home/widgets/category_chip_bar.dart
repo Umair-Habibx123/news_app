@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:news_app/services/news_provider_api.dart';
+import 'package:news_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 const _categoryIcons = {
@@ -20,6 +21,7 @@ class CategoryChipBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l = AppLocalizations.of(context);
 
     return Container(
       color: isDark ? const Color(0xFF1A1A2E) : const Color(0xFF6C63FF),
@@ -63,7 +65,7 @@ class CategoryChipBar extends StatelessWidget {
                           ),
                           const SizedBox(width: 5),
                           Text(
-                            _capitalize(cat),
+                            l.t('category_$cat'),
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: isSelected
@@ -86,7 +88,4 @@ class CategoryChipBar extends StatelessWidget {
       ),
     );
   }
-
-  String _capitalize(String s) =>
-      s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 }

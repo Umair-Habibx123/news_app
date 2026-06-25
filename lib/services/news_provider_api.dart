@@ -46,8 +46,17 @@ class NewsProviderApi with ChangeNotifier {
   String get currentLanguage => _language;
   SortBy get currentSortBy => _sortBy;
 
-  /// Whether language filtering is active (only applies on /everything)
-  bool get isLanguageFilterActive => _endpoint == NewsEndpoint.everything || _searchQuery.isNotEmpty;
+  /// Whether language filtering is active. On /everything the API accepts a
+  /// `language` param directly; on /top-headlines we emulate it by resolving
+  /// sources for that language (see [_resolveLanguageSources]).
+  bool get isLanguageFilterActive =>
+      _endpoint == NewsEndpoint.everything ||
+      _searchQuery.isNotEmpty ||
+      _language != 'en';
+
+  /// Cache of resolved source ids keyed by "language|category" so we don't hit
+  /// the /sources endpoint again while paginating.
+  final Map<String, String> _sourcesCache = {};
 
   static const List<String> categories = [
     'general',
@@ -126,7 +135,13 @@ class NewsProviderApi with ChangeNotifier {
     _errorMessage = '';
     notifyListeners();
     try {
-      final url = _buildApiUrl();
+      final url = await _buildApiUrl();
+      if (url == null) {
+        _errorMessage =
+            'No news sources available for this language and category. '
+            'Try a different language or category.';
+        return;
+      }
       final response = await _httpClient!.get(Uri.parse(url));
       final data = _parseResponse(response);
       if (data != null) _handleSuccessfulResponse(data);
@@ -208,12 +223,14 @@ class NewsProviderApi with ChangeNotifier {
 
   // ─── URL Builder ──────────────────────────────────────────────
 
-  String _buildApiUrl() {
-    // Use /everything when searching or when endpoint is explicitly set
+  /// Builds the request URL. Returns null when language filtering is requested
+  /// but no sources exist for that language/category combination.
+  Future<String?> _buildApiUrl() async {
+    // Use /everything when searching or when endpoint is explicitly set.
     if (_endpoint == NewsEndpoint.everything || _searchQuery.isNotEmpty) {
       final params = <String, String>{
         'q': _searchQuery.isNotEmpty ? _searchQuery : _category,
-        'language': _language, // ✅ only /everything supports this
+        'language': _language, // ✅ only /everything supports this directly
         'sortBy': _sortByString,
         'apiKey': _apiKey,
         'page': _page.toString(),
@@ -224,7 +241,7 @@ class NewsProviderApi with ChangeNotifier {
           .toString();
     }
 
-    // /top-headlines: language param is NOT supported — never include it
+    // /top-headlines: language param is NOT supported by the API.
     final params = <String, String>{
       'apiKey': _apiKey,
       'page': _page.toString(),
@@ -232,9 +249,16 @@ class NewsProviderApi with ChangeNotifier {
     };
 
     if (_source.isNotEmpty) {
-      // sources cannot be mixed with country or category
+      // An explicit source wins; can't be combined with country/category.
       params['sources'] = _source;
+    } else if (_language != 'en') {
+      // Emulate language filtering: pull the publishers for this language
+      // (and category) and query headlines from just those sources.
+      final sources = await _resolveLanguageSources();
+      if (sources == null || sources.isEmpty) return null;
+      params['sources'] = sources;
     } else {
+      // Default English feed: broadest coverage via country + category.
       params['category'] = _category;
       params['country'] = _country;
     }
@@ -242,6 +266,40 @@ class NewsProviderApi with ChangeNotifier {
     return Uri.parse('$_baseUrl/top-headlines')
         .replace(queryParameters: params)
         .toString();
+  }
+
+  /// Resolves the comma-separated source ids that publish in [_language] for
+  /// the current [_category], via /v2/top-headlines/sources. Results are cached.
+  ///
+  /// `category=general` is treated as "all categories" so the General tab isn't
+  /// needlessly narrowed. NewsAPI caps the `sources` param at 20 ids.
+  Future<String?> _resolveLanguageSources() async {
+    final cacheKey = '$_language|$_category';
+    final cached = _sourcesCache[cacheKey];
+    if (cached != null) return cached;
+
+    final params = <String, String>{
+      'language': _language,
+      'apiKey': _apiKey,
+    };
+    if (_category != 'general') params['category'] = _category;
+
+    final url = Uri.parse('$_baseUrl/top-headlines/sources')
+        .replace(queryParameters: params);
+    final response = await _httpClient!.get(url);
+    if (response.statusCode != 200) {
+      _handleErrorResponse(response);
+      return null;
+    }
+
+    final data = json.decode(response.body);
+    final ids = (data['sources'] as List? ?? [])
+        .map((s) => s['id']?.toString() ?? '')
+        .where((id) => id.isNotEmpty)
+        .take(20)
+        .join(',');
+    _sourcesCache[cacheKey] = ids;
+    return ids;
   }
 
   String get _sortByString {

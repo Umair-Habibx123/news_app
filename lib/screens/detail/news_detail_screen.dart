@@ -5,6 +5,7 @@ import 'package:news_app/services/bookmarks_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:news_app/l10n/app_localizations.dart';
 
 class NewsDetailScreen extends StatelessWidget {
   final Map<String, dynamic> article;
@@ -248,7 +249,7 @@ class NewsDetailScreen extends StatelessWidget {
                         child: FilledButton.icon(
                           onPressed: () => _openArticle(article['url']),
                           icon: const Icon(Icons.open_in_browser_rounded),
-                          label: const Text('Read Full Article'),
+                          label: Text(AppLocalizations.of(context).t('readMore')),
                           style: FilledButton.styleFrom(
                             backgroundColor: const Color(0xFF6C63FF),
                             padding: const EdgeInsets.symmetric(vertical: 14),

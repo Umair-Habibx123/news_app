@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:news_app/screens/home/widgets/vertical_news_list.dart';
 import 'package:provider/provider.dart';
 import 'package:news_app/services/bookmarks_provider.dart';
+import 'package:news_app/l10n/app_localizations.dart';
 
 class BookmarksScreen extends StatelessWidget {
   const BookmarksScreen({super.key});
@@ -12,6 +13,7 @@ class BookmarksScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
+    final l = AppLocalizations.of(context);
 
     return SafeArea(
       child: Column(
@@ -24,9 +26,9 @@ class BookmarksScreen extends StatelessWidget {
                 horizontal: 16, vertical: 14),
             child: Row(
               children: [
-                const Text(
-                  'Saved Articles',
-                  style: TextStyle(
+                Text(
+                  l.t('saved'),
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
@@ -43,15 +45,13 @@ class BookmarksScreen extends StatelessWidget {
                         showDialog(
                           context: context,
                           builder: (_) => AlertDialog(
-                            title:
-                                const Text('Clear All Bookmarks'),
-                            content: const Text(
-                                'Remove all saved articles? This cannot be undone.'),
+                            title: Text(l.t('clearAllBookmarks')),
+                            content: Text(l.t('clearBookmarksConfirm')),
                             actions: [
                               TextButton(
                                 onPressed: () =>
                                     Navigator.pop(context),
-                                child: const Text('Cancel'),
+                                child: Text(l.t('cancel')),
                               ),
                               FilledButton(
                                 onPressed: () {
@@ -60,7 +60,7 @@ class BookmarksScreen extends StatelessWidget {
                                 },
                                 style: FilledButton.styleFrom(
                                     backgroundColor: Colors.red),
-                                child: const Text('Clear All'),
+                                child: Text(l.t('clear')),
                               ),
                             ],
                           ),
@@ -68,8 +68,8 @@ class BookmarksScreen extends StatelessWidget {
                       },
                       icon: const Icon(Icons.delete_outline_rounded,
                           color: Colors.white70, size: 16),
-                      label: const Text('Clear All',
-                          style: TextStyle(
+                      label: Text(l.t('clearBookmarks'),
+                          style: const TextStyle(
                               color: Colors.white70, fontSize: 12)),
                     );
                   },
@@ -107,15 +107,15 @@ class BookmarksScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const Text(
-                          'No saved articles yet',
-                          style: TextStyle(
+                        Text(
+                          l.t('noBookmarks'),
+                          style: const TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.w700),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Tap the bookmark icon on any article\nto save it for later',
+                          l.t('noBookmarksHint'),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               color: Colors.grey[500], fontSize: 14),
@@ -132,7 +132,7 @@ class BookmarksScreen extends StatelessWidget {
                       padding:
                           const EdgeInsets.fromLTRB(16, 12, 16, 4),
                       child: Text(
-                        '${bookmarks.count} article${bookmarks.count == 1 ? '' : 's'} saved',
+                        '${bookmarks.count} ${l.t('saved').toLowerCase()}',
                         style: TextStyle(
                             color: Colors.grey[500], fontSize: 12),
                       ),
